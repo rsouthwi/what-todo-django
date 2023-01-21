@@ -14,7 +14,8 @@ If you don't have Poetry installed, run:
 4. generate a secret key:
 	* `python -c 'import secrets; print(secrets.token_urlsafe())'`
 
-4. Create entries, including values, for the following settings in your local .env file:
+5. Create entries, including values, for the following settings in your local .env file:
    * `SECRET_KEY={ value from previous step }`
-5. `poetry run python manage.py migrate`
-6. `poetry run python manage.py runserver`
+6. `poetry run python manage.py migrate`
+7. `poetry run python manage.py createsuperuser`
+8. `poetry run python manage.py runserver`
