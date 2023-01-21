@@ -11,7 +11,11 @@ If you don't have Poetry installed, run:
 1. Clone this repository and `cd` into the project root directory.
 2. `poetry install`
 3. create a local environment settings file: `touch .env`
-4. Create entries, including values, for the following settings in your local .env file:
-   * `SECRET_KEY`
-5. `poetry run python manage.py migrate`
-6. `poetry run python manage.py runserver`
+4. generate a secret key:
+	* `python -c 'import secrets; print(secrets.token_urlsafe())'`
+
+5. Create entries, including values, for the following settings in your local .env file:
+   * `SECRET_KEY={ value from previous step }`
+6. `poetry run python manage.py migrate`
+7. `poetry run python manage.py createsuperuser`
+8. `poetry run python manage.py runserver`
