@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "todo/base.html" %}
+{% block css %}
+    <style>
+
+    </style>
+{% endblock css %}
+{% block content %}
+    here we go!
+  <h1>{{ object.title }}</h1>
+  {% for task in object.task_set.all %}
+    {{ task.name }} - {{ task.description }}
+  {% endfor %}
+{% endblock %}
