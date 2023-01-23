@@ -6,28 +6,36 @@
           border-collapse: collapse;
           text-align: center;
         }
+        .container {
+            display:inline-block
+        }
     </style>
 {% endblock css %}
 {% block content %}
   <h1>{{ request.user }}'s Todo Lists</h1>
-  {% if todo_lists %}
-  <table>
-    <tr>
-        <th>List</th>
-        <th>Active</th>
-        <th>Delete</th>
-    </tr>
+    <div class="container">
+      {% if todo_lists %}
+      <table>
+        <tr>
+            <th>List</th>
+            <th>Active</th>
+            <th>Delete</th>
+        </tr>
 
-    {% for todo_list in todo_lists %}
-    <tr>
-        <td><a href="{% url "list-detail" slug=todo_list.slug %}">{{ todo_list.title }}</a></td>
-        <td>{{ todo_list.active|yesno:'✔,✗' }}</td>
-        <td><button>X</button></td>
-    </tr>
-    {% endfor %}
-  </table>
-  {% else %}
-    <p>You have no todo lists.</p>
-  {% endif %}
+        {% for todo_list in todo_lists %}
+        <tr>
+            <td><a href="{% url "list-detail" slug=todo_list.slug %}">{{ todo_list.title }}</a></td>
+            <td>{{ todo_list.active|yesno:'✔,✗' }}</td>
+            <td><button>X</button></td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+        <p>You have no todo lists.</p>
+      {% endif %}
+    <div>
+        <button>add list</button>
+    </div>
+    </div>
 {% endblock %}
 
