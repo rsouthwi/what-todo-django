@@ -1,41 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>ToDo Lists</title>
-        <style>
-            table, th, td {
-              border: 1px solid black;
-              border-collapse: collapse;
-              text-align: center;
-            }
-        </style>
-    </head>
-    <body>
-        {% block content %}
-          <h1>{{ request.user }}'s Todo Lists</h1>
-          {% if todo_lists %}
-          <table>
-            <tr>
-                <th>List</th>
-                <th>Active</th>
-                <th>Delete</th>
-            </tr>
+{% extends "todo/base.html" %}
+{% block css %}
+    <style>
+        table, th, td {
+          border: 1px solid black;
+          border-collapse: collapse;
+          text-align: center;
+        }
+    </style>
+{% endblock css %}
+{% block content %}
+  <h1>{{ request.user }}'s Todo Lists</h1>
+  {% if todo_lists %}
+  <table>
+    <tr>
+        <th>List</th>
+        <th>Active</th>
+        <th>Delete</th>
+    </tr>
 
-            {% for todo_list in todo_lists %}
-            <tr>
-                <td><a href="{% url "list-detail" slug=todo_list.slug %}">{{ todo_list.title }}</a></td>
-                <td>{{ todo_list.active|yesno:'✔,✗' }}</td>
-                <td><button>X</button></td>
-            </tr>
-            {% endfor %}
-          </table>
-          {% else %}
-            <p>You have no todo lists.</p>
-          {% endif %}
-        {% endblock %}
+    {% for todo_list in todo_lists %}
+    <tr>
+        <td><a href="{% url "list-detail" slug=todo_list.slug %}">{{ todo_list.title }}</a></td>
+        <td>{{ todo_list.active|yesno:'✔,✗' }}</td>
+        <td><button>X</button></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    <p>You have no todo lists.</p>
+  {% endif %}
+{% endblock %}
 
-
-
-    </body>
-</html>
