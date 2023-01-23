@@ -1,13 +1,39 @@
 {% extends "todo/base.html" %}
+{% load static %}
 {% block css %}
     <style>
-
+        table, th, td {
+          border: 1px solid black;
+          border-collapse: collapse;
+          text-align: center;
+        }
     </style>
 {% endblock css %}
 {% block content %}
-    here we go!
   <h1>{{ object.title }}</h1>
-  {% for task in object.task_set.all %}
-    {{ task.name }} - {{ task.description }}
-  {% endfor %}
+  <div style="display:inline-block">
+    <table>
+        <thead>
+            <tr>
+                <th>✔</th>
+                <th>Task</th>
+                <th>Description</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for task in object.task_set.all %}
+            <tr>
+                <td><input type="checkbox" id="task-{{ task.pk }}" {{ task.completed|yesno:'checked, ' }}></td>
+                <td>{{ task.name }}</td>
+                <td>{{ task.description }}</td>
+                <td><img src="{% static "todo/images/edit.svg" %}" alt="Edit the task name or description of {{ task.name }}"></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        <button>delete list</button><button style="float:right">add task</button>
+    </div>
+  </div>
 {% endblock %}
