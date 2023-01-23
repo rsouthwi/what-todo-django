@@ -1,6 +1,8 @@
-from django.shortcuts import render
+import logging
 
-# Create your views here.
+from django.views.generic import ListView, TemplateView, DetailView, View
+
+from .models import ToDoList
 
 """
 Ideas for views:
@@ -29,3 +31,16 @@ task-scope
         ° associated list
         ° completion state
 """
+class TodoListView(ListView):
+    context_object_name = "todo_lists"
+    template_name = "todo/list.html"
+
+    def get_queryset(self):
+        try:
+            return ToDoList.objects.filter(user=self.request.user).order_by("-active", "-date_modified")
+        except TypeError:
+            pass
+
+class TodoListDetailView(DetailView):
+    model = ToDoList
+    template_name = "todo/detail.html"
