@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import TodoListView, TodoListDetailView
+from todo import views
+
 """
 Thoughts on urls for this app:
     we have an api and template-views
@@ -19,8 +20,15 @@ Thoughts on urls for this app:
 urlpatterns = [
     # tempalte paths
     # path("/", ),
-    path("lists/", TodoListView.as_view()),
-    path("lists/<slug:slug>/", TodoListDetailView.as_view(), name="list-detail"),
+    path("lists/", views.TodoListView.as_view(), name="show-lists"),
+    path("lists/add/", views.TodoListCreateView.as_view(), name="list-add"),
+    path("lists/<slug:slug>/add/", views.TaskCreateView.as_view(), name="task-add"),
+    path("lists/<slug:slug>/toggle-active/", views.TodoListToggleActiveState.as_view(), name="list-toggle-active"),
+    path("lists/<slug:slug>/delete/", views.TodoListDeleteView.as_view(), name="list-delete"),
+    path("lists/<slug:slug>/", views.TodoListDetailView.as_view(), name="list-detail"),
+    path("tasks/<int:task_id>/toggle-completed/", views.TaskToggleCompletedState.as_view(), name="task-toggle-complete")
+
+
     #
     # # api paths
     # path("/api/list/", ),

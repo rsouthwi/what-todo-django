@@ -7,6 +7,9 @@
           border-collapse: collapse;
           text-align: center;
         }
+        input[type='checkbox'] {
+            cursor: pointer;
+        }
     </style>
 {% endblock css %}
 {% block content %}
@@ -24,7 +27,7 @@
         <tbody>
         {% for task in object.task_set.all %}
             <tr>
-                <td><input type="checkbox" id="task-{{ task.pk }}" {{ task.completed|yesno:'checked, ' }}></td>
+                <td><a href="{% url "task-toggle-complete" task_id=task.pk %}"><input type="checkbox" id="task-{{ task.pk }}" {{ task.completed|yesno:'checked, ' }}></a></td>
                 <td>{{ task.name }}</td>
                 <td>{{ task.description }}</td>
                 <td><img src="{% static "todo/images/edit.svg" %}" alt="Edit the task name or description of {{ task.name }}"></td>
@@ -33,7 +36,9 @@
         </tbody>
     </table>
     <div>
-        <button>delete list</button><button style="float:right">add task</button>
+        <form>
+            <button formaction="{% url "list-delete" slug=object.slug %}">delete list</button>
+            <button formaction="{% url "task-add" slug=object.slug %}" style="float:right">add task</button></form>
     </div>
   </div>
 {% endblock %}

@@ -9,6 +9,10 @@
         .container {
             display:inline-block
         }
+        .change {
+            color: black;
+            text-decoration: none;
+        }
     </style>
 {% endblock css %}
 {% block content %}
@@ -18,6 +22,7 @@
       <table>
         <tr>
             <th>List</th>
+            <th>Incomplete<br />Tasks</th>
             <th>Active</th>
             <th>Delete</th>
         </tr>
@@ -25,8 +30,9 @@
         {% for todo_list in todo_lists %}
         <tr>
             <td><a href="{% url "list-detail" slug=todo_list.slug %}">{{ todo_list.title }}</a></td>
-            <td>{{ todo_list.active|yesno:'✔,✗' }}</td>
-            <td><button>X</button></td>
+            <td>{{ todo_list.incomplete_tasks }}</td>
+            <td><a class="change" href="{% url "list-toggle-active" slug=todo_list.slug %}">{{ todo_list.active|yesno:'✔,✗' }}</a></td>
+            <td><form><button formaction="{% url "list-delete" slug=todo_list.slug %}">X</button></form></td>
         </tr>
         {% endfor %}
       </table>
@@ -34,7 +40,7 @@
         <p>You have no todo lists.</p>
       {% endif %}
     <div>
-        <button>add list</button>
+        <form><button formaction="{% url "list-add" %}">add list</button></form>
     </div>
     </div>
 {% endblock %}
