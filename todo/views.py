@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from django.http.response import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView, RedirectView, View, edit
+from django.views.generic import DetailView, ListView, RedirectView, UpdateView, edit
 
 from .models import ToDoList, Task
 
@@ -80,7 +80,7 @@ class TodoListDetailView(DetailView):
 class TodoListCreateView(edit.CreateView):
     model = ToDoList
     fields = ["title"]
-    template_name = "todo/list-add.html"
+    template_name = "todo/task.html"
 
     def form_valid(self, form):
         new_list = form.save(commit=False)
@@ -93,6 +93,15 @@ class TodoListDeleteView(edit.DeleteView):
     model = ToDoList
     template_name = "todo/list-delete.html"
     success_url = reverse_lazy("show-lists")
+
+
+class ToDoListUpdateView(UpdateView):
+    model = ToDoList
+    fields = ["title"]
+    template_name = "todo/detail.html"
+
+    def get_success_url(self):
+        return reverse_lazy("list-detail", kwargs={"slug": self.kwargs.get("slug")})
 
 
 class TodoListToggleActiveState(RedirectView):
@@ -108,21 +117,10 @@ class TodoListToggleActiveState(RedirectView):
         return response
 
 
-class TaskToggleCompletedState(RedirectView):
-    permanent = False
-
-    def get(self, request, *args, **kwargs):
-        task_id = self.kwargs.get("task_id")
-        task = Task.objects.get(id=task_id)
-        task.completed = False if task.completed else True
-        task.save()
-        url = reverse_lazy("list-detail", kwargs={'slug': task.todo_list.slug})
-        return HttpResponseRedirect(url)
-
 class TaskCreateView(edit.CreateView):
     model = Task
     fields = ["name", "description"]
-    template_name = "todo/list-add.html"
+    template_name = "todo/task.html"
 
     def form_valid(self, form):
         slug = self.kwargs.get("slug")
@@ -131,3 +129,25 @@ class TaskCreateView(edit.CreateView):
         new_list.todo_list = todo_list
         new_list.save()
         return HttpResponseRedirect(reverse_lazy("list-detail", kwargs={'slug': slug}))
+
+
+class TaskToggleCompletedState(RedirectView):
+    permanent = False
+
+    def get(self, request, *args, **kwargs):
+        task_id = self.kwargs.get("pk")
+        task = Task.objects.get(id=task_id)
+        task.completed = False if task.completed else True
+        task.save()
+        url = reverse_lazy("list-detail", kwargs={"slug": task.todo_list.slug})
+        return HttpResponseRedirect(url)
+
+
+class TaskUpdateView(UpdateView):
+    model = Task
+    fields = ["name", "description"]
+    template_name = "todo/task.html"
+
+    def get_success_url(self):
+        todo_list = Task.objects.get(id=self.kwargs.get("pk")).todo_list
+        return reverse_lazy("list-detail", kwargs={"slug": todo_list.slug})
