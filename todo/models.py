@@ -5,26 +5,6 @@ from django.db import models
 
 User = get_user_model()
 
-"""
-Ideas for Models and/or data entities:
-User
-    name
-ToDoList
-    title - str
-    slug - slug
-    date created - datetime
-    date modified - datetime
-    user - FK
-    active - bool
-Task
-    - todo_list - fk
-    - task_name - str
-    - task_description - optional text
-    - completed - bool
-    - date created
-    - date completed
-"""
-
 class ToDoList(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, blank=True, null=False)
     date_modified = models.DateTimeField(auto_now=True, blank=True, null=False)
