@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.http.response import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, RedirectView, View, edit
@@ -31,6 +33,31 @@ task-scope
         ° associated list
         ° completion state
 """
+class RootRedirectView(RedirectView):
+    permanent = False
+
+    def get(self, request, *args, **kwargs):
+        """
+        send users to their most recently updated list (via modified task then modified list)
+        if they haven't updated any in the last week, send them to the show-lists view
+        """
+        url = reverse_lazy("show-lists")
+        a_week_ago = datetime.today() - timedelta(days=7)
+        user = request.user
+        most_recently_updated_task = Task.objects.filter(todo_list__user=user).\
+            filter(date_modified__gt=a_week_ago).\
+            order_by('-date_modified').first()
+        if most_recently_updated_task:
+            current_list = most_recently_updated_task.todo_list
+        else:
+            current_list = ToDoList.objects.filter(user=user).\
+                filter(date_modified__gt=a_week_ago). \
+                order_by('-date_modified').first()
+        if current_list:
+            url = reverse_lazy("list-detail", kwargs={'slug': current_list.slug})
+        return HttpResponseRedirect(url)
+
+
 class TodoListView(ListView):
     context_object_name = "todo_lists"
     template_name = "todo/list.html"
@@ -82,6 +109,8 @@ class TodoListToggleActiveState(RedirectView):
 
 
 class TaskToggleCompletedState(RedirectView):
+    permanent = False
+
     def get(self, request, *args, **kwargs):
         task_id = self.kwargs.get("task_id")
         task = Task.objects.get(id=task_id)

@@ -19,7 +19,7 @@ Thoughts on urls for this app:
 
 urlpatterns = [
     # tempalte paths
-    # path("/", ),
+    path("", views.RootRedirectView.as_view()),
     path("lists/", views.TodoListView.as_view(), name="show-lists"),
     path("lists/add/", views.TodoListCreateView.as_view(), name="list-add"),
     path("lists/<slug:slug>/add/", views.TaskCreateView.as_view(), name="task-add"),

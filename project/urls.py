@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic.base import RedirectView
 
 """project URL Configuration
 
@@ -20,5 +21,6 @@ Including another URLconf
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("todo/", include("todo.urls"))
+    path("todo/", include("todo.urls")),
+    path("", RedirectView.as_view(url="todo/"))
 ]
