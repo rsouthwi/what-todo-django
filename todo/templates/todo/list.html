@@ -1,13 +1,11 @@
 {% extends "todo/base.html" %}
 {% block css %}
     <style>
+        {{ block.super }}
         table, th, td {
           border: 1px solid black;
           border-collapse: collapse;
           text-align: center;
-        }
-        .container {
-            display:inline-block
         }
         .change {
             color: black;
