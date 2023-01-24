@@ -1,0 +1,45 @@
+{% extends "todo/base.html" %}
+{% block css %}
+    <style>
+        {{ block.super }}
+        table, th, td {
+          border: 1px solid black;
+          border-collapse: collapse;
+          text-align: center;
+        }
+        .change {
+            color: black;
+            text-decoration: none;
+        }
+    </style>
+{% endblock css %}
+{% block content %}
+  <h1>{{ request.user }}'s Todo Lists</h1>
+    <div class="container">
+      {% if todo_lists %}
+      <table>
+        <tr>
+            <th>List</th>
+            <th>Incomplete<br />Tasks</th>
+            <th>Active</th>
+            <th>Delete</th>
+        </tr>
+
+        {% for todo_list in todo_lists %}
+        <tr>
+            <td><a href="{% url "list-detail" slug=todo_list.slug %}">{{ todo_list.title }}</a></td>
+            <td>{{ todo_list.incomplete_tasks }}</td>
+            <td><a class="change" href="{% url "list-toggle-active" slug=todo_list.slug %}">{{ todo_list.active|yesno:'✔,✗' }}</a></td>
+            <td><form><button formaction="{% url "list-delete" slug=todo_list.slug %}">X</button></form></td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+        <p>You have no todo lists.</p>
+      {% endif %}
+    <div>
+        <form><button formaction="{% url "list-add" %}">add list</button></form>
+    </div>
+    </div>
+{% endblock %}
+

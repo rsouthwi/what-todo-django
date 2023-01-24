@@ -1,0 +1,58 @@
+{% extends "todo/base.html" %}
+{% load static %}
+{% block css %}
+    {{ block.super }}
+        <style>
+            table, th, td {
+              border: 1px solid black;
+              border-collapse: collapse;
+              text-align: center;
+            }
+            input[type='checkbox'] {
+                cursor: pointer;
+            }
+        </style>
+{% endblock css %}
+{% block content %}
+    {% if form %}
+    <br />
+    <form method="post">
+        {% csrf_token %}
+        <div class="container">{{ form }}<input type="submit" value="Save"></div>
+    <br /><br /><br />
+    </form>
+    {% else %}
+        <h1>{{ object.title }} <a href="{% url "list-update" slug=object.slug %}"><img src="{% static "todo/images/edit.svg" %}" alt="Edit the title of {{ object.title }}"></a></h1>
+    {% endif %}
+  <div class="container">
+    <table>
+        <thead>
+            <tr>
+                <th>✔</th>
+                <th>Task</th>
+                <th>Description</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for task in object.task_set.all %}
+            <tr>
+                <td><a href="{% url "task-toggle-complete" pk=task.pk %}"><input type="checkbox" id="task-{{ task.pk }}" {{ task.completed|yesno:'checked, ' }}></a></td>
+                <td>{{ task.name }}</td>
+                <td>{{ task.description }}</td>
+                <td><a href="{% url "task-update" pk=task.pk %}"><img src="{% static "todo/images/edit.svg" %}" alt="Edit the task name or description of {{ task.name }}"></a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        <form>
+            <button formaction="{% url "list-delete" slug=object.slug %}">delete list</button>
+            <button formaction="{% url "task-add" slug=object.slug %}" class="right">add task</button></form>
+    </div>
+    <div class="right">
+        <p><a href="{% url "show-lists" %}">View All Lists</a></p>
+    </div>
+  </div>
+
+{% endblock %}
