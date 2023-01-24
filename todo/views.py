@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.http.response import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import DetailView, ListView, RedirectView, UpdateView, edit
 
 from .models import ToDoList, Task
@@ -16,7 +17,7 @@ class RootRedirectView(RedirectView):
         if they haven't updated any in the last week, send them to the show-lists view
         """
         url = reverse_lazy("show-lists")
-        a_week_ago = datetime.today() - timedelta(days=7)
+        a_week_ago = timezone.now() - timedelta(days=7)
         user = request.user
         most_recently_updated_task = Task.objects.filter(todo_list__user=user).\
             filter(date_modified__gt=a_week_ago).\
