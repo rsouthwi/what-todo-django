@@ -1,39 +1,19 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http.response import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import DetailView, ListView, RedirectView, UpdateView, edit
 
 from .models import ToDoList, Task
 
-"""
-Ideas for views:
-user-scope
-    - [GET] show active list with most recent activity (detail view)
-        show form with list of items (including state)
-        click on item to reveal details?
-    - [GET] list dashboard (the default if there are no active lists)
-        filter by active
-        search by name
-        sort by date
-    - [POST] create new list
-list-scope
-    - [GET] list detail view (same as show active list above)
-    - [POST] add list view (api endpoint?)
-    - [DELETE] delete list (api endpoint?)
-    - [PATCH] update list (api endpoint?)
-        ° rename list
-    - [POST] add task to list
-task-scope
-    - [POST] alter state of task (completed)
-    - [DELETE] delete task, 
-    - [PUT] change task:
-        ° name
-        ° description
-        ° associated list
-        ° completion state
-"""
-class RootRedirectView(RedirectView):
+
+class TodoLoginRequiredMixin(LoginRequiredMixin):
+    login_url = reverse_lazy("login")
+
+
+class RootRedirectView(TodoLoginRequiredMixin, RedirectView):
     permanent = False
 
     def get(self, request, *args, **kwargs):
@@ -42,7 +22,7 @@ class RootRedirectView(RedirectView):
         if they haven't updated any in the last week, send them to the show-lists view
         """
         url = reverse_lazy("show-lists")
-        a_week_ago = datetime.today() - timedelta(days=7)
+        a_week_ago = timezone.now() - timedelta(days=7)
         user = request.user
         most_recently_updated_task = Task.objects.filter(todo_list__user=user).\
             filter(date_modified__gt=a_week_ago).\
@@ -58,7 +38,7 @@ class RootRedirectView(RedirectView):
         return HttpResponseRedirect(url)
 
 
-class TodoListView(ListView):
+class TodoListView(LoginRequiredMixin, ListView):
     context_object_name = "todo_lists"
     template_name = "todo/list.html"
 
@@ -72,12 +52,12 @@ class TodoListView(ListView):
             pass
 
 
-class TodoListDetailView(DetailView):
+class TodoListDetailView(LoginRequiredMixin, DetailView):
     model = ToDoList
     template_name = "todo/detail.html"
 
 
-class TodoListCreateView(edit.CreateView):
+class TodoListCreateView(LoginRequiredMixin, edit.CreateView):
     model = ToDoList
     fields = ["title"]
     template_name = "todo/task.html"
@@ -89,13 +69,13 @@ class TodoListCreateView(edit.CreateView):
         return HttpResponseRedirect(reverse_lazy("show-lists"))
 
 
-class TodoListDeleteView(edit.DeleteView):
+class TodoListDeleteView(LoginRequiredMixin, edit.DeleteView):
     model = ToDoList
     template_name = "todo/list-delete.html"
     success_url = reverse_lazy("show-lists")
 
 
-class ToDoListUpdateView(UpdateView):
+class ToDoListUpdateView(LoginRequiredMixin, UpdateView):
     model = ToDoList
     fields = ["title"]
     template_name = "todo/detail.html"
@@ -104,7 +84,7 @@ class ToDoListUpdateView(UpdateView):
         return reverse_lazy("list-detail", kwargs={"slug": self.kwargs.get("slug")})
 
 
-class TodoListToggleActiveState(RedirectView):
+class TodoListToggleActiveState(LoginRequiredMixin, RedirectView):
     permanent = False
     url = reverse_lazy("show-lists")
 
@@ -117,10 +97,15 @@ class TodoListToggleActiveState(RedirectView):
         return response
 
 
-class TaskCreateView(edit.CreateView):
+class TaskCreateView(LoginRequiredMixin, edit.CreateView):
     model = Task
     fields = ["name", "description"]
     template_name = "todo/task.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['slug'] = self.kwargs.get('slug')
+        return context
 
     def form_valid(self, form):
         slug = self.kwargs.get("slug")
@@ -131,7 +116,7 @@ class TaskCreateView(edit.CreateView):
         return HttpResponseRedirect(reverse_lazy("list-detail", kwargs={'slug': slug}))
 
 
-class TaskToggleCompletedState(RedirectView):
+class TaskToggleCompletedState(LoginRequiredMixin, RedirectView):
     permanent = False
 
     def get(self, request, *args, **kwargs):
@@ -143,7 +128,7 @@ class TaskToggleCompletedState(RedirectView):
         return HttpResponseRedirect(url)
 
 
-class TaskUpdateView(UpdateView):
+class TaskUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
     fields = ["name", "description"]
     template_name = "todo/task.html"

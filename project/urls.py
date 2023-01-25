@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from django.views.generic.base import RedirectView
 
@@ -20,7 +21,8 @@ Including another URLconf
 
 
 urlpatterns = [
+    path("accounts/login/", auth_views.LoginView.as_view(template_name="admin/login.html", next_page="/"), name="login"),
     path("admin/", admin.site.urls),
     path("todo/", include("todo.urls")),
-    path("", RedirectView.as_view(url="todo/"))
+    path("", RedirectView.as_view(url="todo/"), name="root")
 ]

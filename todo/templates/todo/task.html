@@ -6,7 +6,8 @@
             {% csrf_token %}
             {{ form.as_p }}
             <input type="submit" value="Save">
-            <button onclick="window.location.href='{% url "list-detail" slug=object.todo_list.slug %}';" class="right">Cancel</button>
+            <button type="button"
+                    onclick="window.location.href='{% if object.todo_list.slug %}{% url "list-detail" slug=object.todo_list.slug %}{% elif slug %}{% url "list-detail" slug=slug %}{% else %}/{% endif %}';" class="right">Cancel</button>
         </form>
     </div>
 {% endblock content %}
