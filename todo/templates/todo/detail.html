@@ -38,7 +38,7 @@
         {% for task in object.task_set.all %}
             <tr>
                 <td><a href="{% url "task-toggle-complete" pk=task.pk %}"><input type="checkbox" id="task-{{ task.pk }}" {{ task.completed|yesno:'checked, ' }}></a></td>
-                <td>{{ task.name }}</td>
+                <td>{% if task.completed %}<s>{% endif %}{{ task.name }}{% if task.completed %}</s>{% endif %}</td>
                 <td>{{ task.description }}</td>
                 <td><a href="{% url "task-update" pk=task.pk %}"><img src="{% static "todo/images/edit.svg" %}" alt="Edit the task name or description of {{ task.name }}"></a></td>
             </tr>
@@ -47,8 +47,8 @@
     </table>
     <div>
         <form>
-            <button formaction="{% url "list-delete" slug=object.slug %}">delete list</button>
-            <button formaction="{% url "task-add" slug=object.slug %}" class="right">add task</button></form>
+            <button formaction="{% url "task-add" slug=object.slug %}">add task</button>
+            <button formaction="{% url "list-delete" slug=object.slug %}" class="right">delete list</button></form>
     </div>
     <div class="right">
         <p><a href="{% url "show-lists" %}">View All Lists</a></p>
